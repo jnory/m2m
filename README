@@ -1,0 +1,21 @@
+[moses to mtplz converter]
+
+!!!NOTE!!! This program is an alpha version. !!!NOTE!!!
+
+This program converts the configurations and phrase tables of moses decoder ( https://github.com/moses-smt/mosesdecoder )
+into mtplz decoder ( https://github.com/kpu/mtplz ).
+
+* Usage
+python m2m.py --ini moses.ini --decoder mtplz/bin/decode --output /path/to/output
+
+After converting the configurations, run /path/to/output/mtplz_wrap.sh.
+Note that:
+stdin = foreign language text, and,
+stdout = translated text.
+
+* License
+MIT
+
+Enjoy!
+
+Jun-ya NORIMATSU
