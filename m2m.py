@@ -26,6 +26,9 @@ class PhraseTable(object):
 
     @staticmethod
     def _parse_line_primitive(line):
+        """
+        :rtype : list, list, np.ndarray
+        """
         f_words, e_words, scores = PhraseTable._parse_line(line)
         f_words = f_words.split(' ')
         e_words = e_words.split(' ')
@@ -62,7 +65,11 @@ class MosesIniReader(object):
         self.feature_conf = {}
         self.weight_conf = {}
 
-        fp = smart_open(path)
+        if isinstance(path, str):
+            fp = smart_open(path)
+        else:
+            fp = path
+            fp.seek(0)
         self._parse(fp)
         self._parse_feature()
         self._parse_weight()
@@ -75,7 +82,7 @@ class MosesIniReader(object):
         for line in fp:
             line = line.strip()
 
-            if len(line)==0 or line[0] == '#':
+            if len(line) == 0 or line[0] == '#':
                 continue
             if line[0] == '[':
                 name = line[1:-1]
@@ -99,7 +106,6 @@ class MosesIniReader(object):
             name, weights = line.split('=')
             weights = np.fromstring(weights, dtype=np.float, sep=' ')
             self.weight_conf[name] = weights
-
 
 class LM(object):
     def __init__(self, path, weight):
@@ -169,11 +175,12 @@ class Converter(object):
             "BEAM={0}".format(self.reader.stack),
             "LIMIT={0}".format(self.reader.distortion_limit),
             "BIN={0}".format(self.decoder_path),
-            "$BIN --lm $LM --phrase $PT --weights_file $WEIGHTS --beam $BEAM --reordering $LIMIT"
+            "LC_ALL=C $BIN --lm $LM --phrase $PT --weights_file $WEIGHTS --beam $BEAM --reordering $LIMIT"
         ]
         script = '\n'.join(script)
         fp_sh.write(script)
         fp_sh.close()
+        os.chmod(mtplz_wrap_sh, 0755)
 
     def _get_name(self, feature_class_name):
         return self.reader.feature_conf[feature_class_name].get('name', '{0}0'.format(feature_class_name))
