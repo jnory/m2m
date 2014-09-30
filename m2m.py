@@ -3,6 +3,7 @@
 import numpy as np
 import os
 from utils.smart_fp import smart_open
+import gzip
 
 
 class PhraseTable(object):
@@ -140,7 +141,7 @@ class Converter(object):
         mtplz_ini = os.path.join(output_directory, 'mtplz.ini')
         self._write_ini(mtplz_ini)
 
-        phrase_table = os.path.join(output_directory, 'phrase_table')
+        phrase_table = os.path.join(output_directory, 'phrase_table.gz')
         self._write_pt(phrase_table)
 
         mtplz_wrap_sh = os.path.join(output_directory, 'mtplz_wrap.sh')
@@ -156,7 +157,7 @@ class Converter(object):
 
     def _write_pt(self, path_pt):
         pt = PhraseTable(self.phrase_table.path)
-        fp_pt = open(path_pt, 'w')
+        fp_pt = gzip.open(path_pt, 'w')
         for f_words, e_words, scores in pt.iter():
             scores = np.log(scores)
             fp_pt.write('{0} ||| {1} ||| {2}\n'.format(
